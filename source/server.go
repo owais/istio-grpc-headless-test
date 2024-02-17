@@ -6,10 +6,12 @@ import (
 	"net"
 	"os"
 	"strings"
+	"time"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	pb "google.golang.org/grpc/examples/helloworld/helloworld"
+	"google.golang.org/grpc/health/grpc_health_v1"
 )
 
 var (
@@ -39,6 +41,7 @@ func mainServer(logger *zap.Logger) {
 	}
 	s := grpc.NewServer()
 	pb.RegisterGreeterServer(s, &server{logger: logger})
+	grpc_health_v1.RegisterHealthServer(s, &healthChecker{time.Now()})
 	logger.Info("server listening", zap.String("address", lis.Addr().String()))
 	if err := s.Serve(lis); err != nil {
 		logger.Fatal("failed to serve", zap.Error(err))

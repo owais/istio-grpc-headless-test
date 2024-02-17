@@ -30,7 +30,7 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-        - image: owais/istio-grpc-test:latest
+        - image: owais/istio-grpc-test:dev-046da3d
           name: istio-grpc-test
           args:
             - server
@@ -45,11 +45,32 @@ spec:
           ports:
             - containerPort: 9090
               name: grpc
+          readinessProbe:
+            grpc:
+              port: 9090
+            #httpGet:
+            #  path: /ready
+            #  port: 80
+            #successThreshold: 3
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Sidecar
+metadata:
+  name: istio-grpc-test-server
+  namespace: istio-test
+spec:
+  egress:
+  - hosts:
+    - istio-system/*
+  workloadSelector:
+    labels:
+      app: istio-grpc-test
+      component: server 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: istio-grpc-test
+  name: istio-grpc-test-server
   namespace: istio-test
   annotations:
     app: istio-grpc-test
@@ -60,7 +81,7 @@ spec:
     app: istio-grpc-test
     component: server
   ports:
-  - name: grpc-api 
+  - name: tcp-api 
     protocol: TCP
     port: 9090
     targetPort: grpc
@@ -89,7 +110,7 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-        - image: owais/istio-grpc-test:latest
+        - image: owais/istio-grpc-test:dev-046da3d
           name: istio-grpc-test
           args:
             - client 
@@ -103,4 +124,19 @@ spec:
               cpu: "100m"
           env:
             - name: SERVERS
-              value: "istio-grpc-test-0.istio-grpc-test.istio-test.svc.cluster.local:9080"
+              value: "istio-grpc-test-server-0.istio-grpc-test-server.istio-test.svc.cluster.local:9090"
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Sidecar
+metadata:
+  name: istio-grpc-test-client
+  namespace: istio-test
+spec:
+  egress:
+  - hosts:
+    - istio-system/*
+    - istio-test/istio-grpc-test-server.istio-test.svc.cluster.local
+  workloadSelector:
+    labels:
+      app: istio-grpc-test
+      component: client
