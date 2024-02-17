@@ -38,7 +38,9 @@
  ### Deployment have the same issue
  
  I've deployed the servers as a statefulset as that is the closest setup to my real world scenario but it doesn't really matter. I've been able to reproduce it with deployment as well as long as the pods are exposed with a headless service (`clusterIP: None`). 
- 
+
+### accessing individual pods vs service behaves the same
+It doesn't matter whether the client tries to connect to the headless service (`istio-grpc-test-server.istio-test.svc.cluster.local`) or a specific pod (`istio-grpc-test-server-0.istio-grpc-test-server.istio-test.svc.cluster.local`). Both cases behave exactly the same.
 
 ## What works
 
