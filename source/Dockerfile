@@ -18,10 +18,9 @@ ADD . /source
 RUN  --mount=type=cache,target=/source/.cache go build -ldflags="-w -s" -o bin/istio-grpc-test .
 
 # final image
-FROM scratch as final
+FROM busybox:1.35.0 as final
 
 USER 10000
 COPY --from=builder /source/bin/istio-grpc-test /usr/local/bin/istio-grpc-test
-COPY --from=builder /bin/sleep /usr/local/bin/sleep
 
 ENTRYPOINT ["istio-grpc-test"]
