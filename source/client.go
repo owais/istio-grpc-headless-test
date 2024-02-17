@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"math/rand/v2"
 	"os"
 	"os/signal"
 	"strings"
@@ -49,11 +50,11 @@ func spawnClient(logger *zap.Logger, server_address string) {
 
 	for {
 		ctx, _ := context.WithTimeout(context.Background(), time.Second)
-		if r, err := c.SayHello(ctx, &pb.HelloRequest{Name: "istio test"}); err != nil {
+		if r, err := c.SayHello(ctx, &pb.HelloRequest{Name: server_address}); err != nil {
 			logger.Error("could not greet", zap.Error(err))
 		} else {
 			logger.Info("Received Greeting", zap.String("message", r.GetMessage()))
 		}
-		time.Sleep(3 * time.Second)
+		time.Sleep(2 + rand.N(4*time.Second))
 	}
 }

@@ -1,6 +1,6 @@
 module github.com/owais/istio-grpc-headless-repro
 
-go 1.21.5
+go 1.22.0
 
 require (
 	go.uber.org/zap v1.26.0
