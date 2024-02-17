@@ -50,11 +50,3 @@ endif
 ifeq ($(NAMESPACE),)
 	$(error NAMESPACE is undefined)
 endif
-
-
-deploy: check-env
-	export NAMESPACE=$(NAMESPACE) REALM=$(REALM) SERVICE_NAME=$(SERVICE_NAME) IMAGE=${IMAGE} VERSION=${VERSION} && envsubst < deployment.yaml | kubectl apply -f -
-
-
-undeploy: check-env
-	export NAMESPACE=$(NAMESPACE) REALM=$(REALM) SERVICE_NAME=$(SERVICE_NAME) VERSION=${VERSION} && envsubst < deployment.yaml | kubectl delete -f -

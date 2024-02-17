@@ -15,13 +15,12 @@ RUN go mod download
 ENV GOCACHE /source/.cache
 
 ADD . /source
-RUN  --mount=type=cache,target=/source/.cache go build -ldflags="-w -s" -o istio-grpc-test .
+RUN  --mount=type=cache,target=/source/.cache go build -ldflags="-w -s" -o bin/istio-grpc-test .
 
 # final image
-#FROM docker.repo.splunkdev.net/observability/scratch:v0.4.0 AS final
 FROM scratch as final
 
 USER 10000
-COPY --from=builder /source/server /usr/local/bin/istio-grpc-test
+COPY --from=builder /source/bin/istio-grpc-test /usr/local/bin/istio-grpc-test
 
 ENTRYPOINT ["istio-grpc-test"]

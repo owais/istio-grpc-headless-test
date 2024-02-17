@@ -1,0 +1,106 @@
+apiVersion: v1
+kind: Namespace 
+metadata:
+  labels:
+    istio-injection: enabled
+    kubernetes.io/metadata.name: istio-test
+  name: istio-test
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app.kubernetes.io/name: istio-grpc-test-server
+  name: istio-grpc-test-server
+  namespace: istio-test
+spec:
+  serviceName: "istio-grpc-test-server"
+  replicas: 3
+  selector:
+    matchLabels:
+      app: istio-grpc-test
+      component: server
+  template:
+    metadata:
+      labels:
+        app: istio-grpc-test
+        component: server
+      annotations:
+        sidecar.istio.io/inject: "true"
+    spec:
+      restartPolicy: Always
+      containers:
+        - image: owais/istio-grpc-test:latest
+          name: istio-grpc-test
+          args:
+            - server
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "60Mi"
+              cpu: "100m"
+            limits:
+              memory: "60Mi"
+              cpu: "100m"
+          ports:
+            - containerPort: 9090
+              name: grpc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: istio-grpc-test
+  namespace: istio-test
+  annotations:
+    app: istio-grpc-test
+    component: server
+spec:
+  clusterIP: None
+  selector:
+    app: istio-grpc-test
+    component: server
+  ports:
+  - name: grpc-api 
+    protocol: TCP
+    port: 9090
+    targetPort: grpc
+---
+apiVersion: apps/v1
+kind: Deployment 
+metadata:
+  labels:
+    app.kubernetes.io/name: istio-grpc-test-client
+  name: istio-grpc-test-client
+  namespace: istio-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: istio-grpc-test
+      component: client
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: istio-grpc-test
+        component: client
+      annotations:
+        sidecar.istio.io/inject: "true"
+    spec:
+      restartPolicy: Always
+      containers:
+        - image: owais/istio-grpc-test:latest
+          name: istio-grpc-test
+          args:
+            - client 
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "60Mi"
+              cpu: "100m"
+            limits:
+              memory: "60Mi"
+              cpu: "100m"
+          env:
+            - name: SERVERS
+              value: "istio-grpc-test-0.istio-grpc-test.istio-test.svc.cluster.local:9080"
