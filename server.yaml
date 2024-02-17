@@ -7,14 +7,14 @@ metadata:
   name: istio-test
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: StatefulSet 
 metadata:
   labels:
     app.kubernetes.io/name: istio-grpc-test-server
   name: istio-grpc-test-server
   namespace: istio-test
 spec:
-  serviceName: "istio-grpc-test-server"
+  serviceName: istio-grpc-test-server
   replicas: 3
   selector:
     matchLabels:
@@ -30,7 +30,7 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-        - image: owais/istio-grpc-test:dev-56f6475
+        - image: owais/istio-grpc-test:dev-ef5fd3d
           name: istio-grpc-test
           args:
             - server
@@ -73,69 +73,15 @@ metadata:
   namespace: istio-test
   annotations:
     app: istio-grpc-test
-    component: server
+    component: server 
 spec:
   clusterIP: None
   selector:
     app: istio-grpc-test
     component: server
   ports:
-  - name: tcp-api 
+  #- name: tcp-api 
+  - name: grpc-api 
     protocol: TCP
     port: 9090
     targetPort: grpc
----
-apiVersion: apps/v1
-kind: Deployment 
-metadata:
-  labels:
-    app.kubernetes.io/name: istio-grpc-test-client
-  name: istio-grpc-test-client
-  namespace: istio-test
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: istio-grpc-test
-      component: client
-  strategy: {}
-  template:
-    metadata:
-      labels:
-        app: istio-grpc-test
-        component: client
-      annotations:
-        sidecar.istio.io/inject: "true"
-    spec:
-      restartPolicy: Always
-      containers:
-        - image: owais/istio-grpc-test:dev-56f6475
-          name: istio-grpc-test
-          args:
-            - client 
-          imagePullPolicy: Always
-          resources:
-            requests:
-              memory: "60Mi"
-              cpu: "100m"
-            limits:
-              memory: "60Mi"
-              cpu: "100m"
-          env:
-            - name: SERVERS
-              value: "istio-grpc-test-server-0.istio-grpc-test-server.istio-test.svc.cluster.local:9090,istio-grpc-test-server-1.istio-grpc-test-server.istio-test.svc.cluster.local:9090,istio-grpc-test-server-2.istio-grpc-test-server.istio-test.svc.cluster.local:9090"
----
-apiVersion: networking.istio.io/v1beta1
-kind: Sidecar
-metadata:
-  name: istio-grpc-test-client
-  namespace: istio-test
-spec:
-  egress:
-  - hosts:
-    - istio-system/*
-    - istio-test/istio-grpc-test-server.istio-test.svc.cluster.local
-  workloadSelector:
-    labels:
-      app: istio-grpc-test
-      component: client
