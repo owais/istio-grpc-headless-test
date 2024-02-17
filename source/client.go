@@ -55,6 +55,7 @@ func spawnClient(logger *zap.Logger, server_address string) {
 		} else {
 			logger.Info("Received Greeting", zap.String("message", r.GetMessage()))
 		}
-		time.Sleep(2 + rand.N(4*time.Second))
+		// sleep for 5-10 seconds
+		time.Sleep(5 + rand.N(10*time.Second))
 	}
 }

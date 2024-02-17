@@ -30,7 +30,7 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-        - image: owais/istio-grpc-test:dev-046da3d
+        - image: owais/istio-grpc-test:dev-3af6f8d
           name: istio-grpc-test
           args:
             - server
@@ -46,12 +46,11 @@ spec:
             - containerPort: 9090
               name: grpc
           readinessProbe:
-            grpc:
-              port: 9090
-            #httpGet:
-            #  path: /ready
-            #  port: 80
-            #successThreshold: 3
+            initialDelaySeconds: 30
+            exec:
+              command:
+                - echo
+                - "ready"
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: Sidecar
@@ -110,7 +109,7 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-        - image: owais/istio-grpc-test:dev-046da3d
+        - image: owais/istio-grpc-test:dev-3af6f8d
           name: istio-grpc-test
           args:
             - client 
@@ -124,7 +123,7 @@ spec:
               cpu: "100m"
           env:
             - name: SERVERS
-              value: "istio-grpc-test-server-0.istio-grpc-test-server.istio-test.svc.cluster.local:9090"
+              value: "istio-grpc-test-server-0.istio-grpc-test-server.istio-test.svc.cluster.local:9090,istio-grpc-test-server-1.istio-grpc-test-server.istio-test.svc.cluster.local:9090,istio-grpc-test-server-2.istio-grpc-test-server.istio-test.svc.cluster.local:9090"
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: Sidecar

@@ -3,11 +3,19 @@ package main
 import (
 	"os"
 
+	"github.com/mattn/go-colorable"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 func main() {
-	logger := zap.Must(zap.NewProduction())
+	cfg := zap.NewProductionEncoderConfig()
+	cfg.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	logger := zap.New(zapcore.NewCore(
+		zapcore.NewConsoleEncoder(cfg),
+		zapcore.AddSync(colorable.NewColorableStdout()),
+		zapcore.InfoLevel,
+	))
 	defer logger.Sync()
 
 	args := os.Args[1:]
