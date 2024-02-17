@@ -1,12 +1,6 @@
 IMAGE ?= owais/istio-grpc-test
 VERSION ?= dev-$$(git rev-parse --short HEAD)
 
-REALM?=
-NAMESPACE?=istio-grpc-test
-SERVICE_NAME?=istio-grpc-test
-KUBE_AUTH_METHOD?=local
-
-
 .PHONY: docker-setup
 docker-setup:
 	docker buildx create --use
@@ -21,8 +15,8 @@ docker-push:
 
 .PHONY: docker-build-local
 docker-build-local:
-		DOCKER_BUILDKIT=1 docker build -t ${SERVICE_NAME} --target final .
-		docker tag ${SERVICE_NAME} ${IMAGE}:${VERSION}
+		DOCKER_BUILDKIT=1 docker build -t istio-grpc-test --target final .
+		docker tag istio-grpc-test ${IMAGE}:${VERSION}
 
 .PHONY: docker-push
 docker-push-local-image:
@@ -39,14 +33,3 @@ run-client:
 .PHONY: build 
 build:
 	go build -o ./bin/istio-grpc-test .
-
-check-env:
-ifeq ($(SERVICE_NAME),)
-	$(error SERVICE_NAME is undefined)
-endif
-ifeq ($(REALM),)
-	$(error REALM is undefined)
-endif
-ifeq ($(NAMESPACE),)
-	$(error NAMESPACE is undefined)
-endif
