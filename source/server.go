@@ -22,7 +22,7 @@ type server struct {
 }
 
 func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
-	s.logger.Info("Received greeting", zap.String("address", in.GetName()))
+	s.logger.Info("Received message", zap.String("on", in.GetName()))
 	return &pb.HelloReply{Message: "Hello from " + in.GetName()}, nil
 }
 

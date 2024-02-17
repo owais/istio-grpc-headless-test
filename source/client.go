@@ -53,7 +53,7 @@ func spawnClient(logger *zap.Logger, server_address string) {
 		if r, err := c.SayHello(ctx, &pb.HelloRequest{Name: server_address}); err != nil {
 			logger.Error("could not greet", zap.Error(err))
 		} else {
-			logger.Info("Received Greeting", zap.String("message", r.GetMessage()))
+			logger.Info("Got response", zap.String("message", r.GetMessage()))
 		}
 		// sleep for 5-10 seconds
 		time.Sleep(5 + rand.N(10*time.Second))
