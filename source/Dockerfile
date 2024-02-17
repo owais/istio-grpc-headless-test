@@ -18,9 +18,12 @@ ADD . /source
 RUN  --mount=type=cache,target=/source/.cache go build -ldflags="-w -s" -o bin/istio-grpc-test .
 
 # final image
-FROM busybox:1.35.0 as final
+FROM alpine:3.19.1 as final
+
+RUN apk add --no-cache curl bash
 
 USER 10000
 COPY --from=builder /source/bin/istio-grpc-test /usr/local/bin/istio-grpc-test
+
 
 ENTRYPOINT ["istio-grpc-test"]
