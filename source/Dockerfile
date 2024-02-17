@@ -22,5 +22,6 @@ FROM scratch as final
 
 USER 10000
 COPY --from=builder /source/bin/istio-grpc-test /usr/local/bin/istio-grpc-test
+COPY --from=builder /bin/sleep /usr/local/bin/sleep
 
 ENTRYPOINT ["istio-grpc-test"]
