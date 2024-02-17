@@ -1,5 +1,7 @@
 ## Demonstrate gRPC + headless service issues with istio
 
+issue: https://github.com/istio/istio/issues/49391
+
 
 ### Steps to reproduce
 
