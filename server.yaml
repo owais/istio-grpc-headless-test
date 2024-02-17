@@ -30,7 +30,7 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-        - image: owais/istio-grpc-test:dev-ef5fd3d
+        - image: owais/istio-grpc-test:dev-db1dfcf
           name: istio-grpc-test
           args:
             - server
